@@ -123,21 +123,21 @@ export default function Dashboard() {
                 <div className="font-medium">Freelance Project</div>
                 <div className="text-sm text-muted-foreground">2 hours ago</div>
               </div>
-              <div className="text-income font-semibold">+$1,200</div>
+              <div className="text-income font-semibold">{formatCurrency(1200)}</div>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-expense/10">
               <div>
                 <div className="font-medium">Office Supplies</div>
                 <div className="text-sm text-muted-foreground">Yesterday</div>
               </div>
-              <div className="text-expense font-semibold">-$85</div>
+              <div className="text-expense font-semibold">-{formatCurrency(85)}</div>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-debt/10">
               <div>
                 <div className="font-medium">Credit Card Payment</div>
                 <div className="text-sm text-muted-foreground">3 days ago</div>
               </div>
-              <div className="text-debt font-semibold">-$500</div>
+              <div className="text-debt font-semibold">-{formatCurrency(500)}</div>
             </div>
           </div>
         </div>

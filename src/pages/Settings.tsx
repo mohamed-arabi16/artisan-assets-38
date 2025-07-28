@@ -9,11 +9,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Settings as SettingsIcon, Moon, Sun, DollarSign, Globe } from "lucide-react";
+import { Settings as SettingsIcon, Moon, Sun, DollarSign, Globe, Download } from "lucide-react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const { currency, setCurrency } = useCurrency();
+  const { theme, setTheme } = useTheme();
+  const { i18n, t } = useTranslation();
+  const { toast } = useToast();
+
+  const handleExportData = async () => {
+    try {
+      // Mock data for CSV export
+      const data = [
+        ['Date', 'Type', 'Amount', 'Description'],
+        ['2024-01-15', 'Income', '2500', 'Freelance Web Design'],
+        ['2024-01-16', 'Expense', '-85', 'Office Supplies'],
+        ['2024-01-17', 'Asset', '45200', 'Silver Holdings'],
+      ];
+      
+      const csvContent = data.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial-data-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export Successful",
+        description: "Your financial data has been exported to CSV format.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="p-6 space-y-6 bg-gradient-dashboard min-h-screen">
@@ -74,7 +114,7 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="theme">Theme</Label>
-              <Select defaultValue="system">
+              <Select value={theme} onValueChange={setTheme}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
@@ -130,7 +170,7 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="language">Language</Label>
-              <Select defaultValue="en">
+              <Select value={i18n.language} onValueChange={(lang) => i18n.changeLanguage(lang)}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
@@ -152,7 +192,8 @@ export default function Settings() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExportData}>
+              <Download className="h-4 w-4 mr-2" />
               Export All Data (CSV)
             </Button>
           </CardContent>

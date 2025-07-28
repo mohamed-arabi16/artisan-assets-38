@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCommodityPrices } from "@/hooks/useCommodityPrices";
 import { FinancialCard } from "@/components/ui/financial-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,16 +87,56 @@ export default function Assets() {
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [isAddingAsset, setIsAddingAsset] = useState(false);
   const { formatCurrency } = useCurrency();
+  const { prices: commodityPrices, loading: pricesLoading } = useCommodityPrices();
 
   useEffect(() => {
     const loadAssets = async () => {
       const { data } = await supabase.from('assets').select('*');
-      if (data) {
-        setAssets(data as Asset[]);
+      if (data && data.length > 0) {
+        // Update prices for silver and gold assets with real market data
+        const updatedAssets = data.map((asset: Asset) => {
+          if (asset.type === 'silver' && asset.auto_update) {
+            return {
+              ...asset,
+              price_per_unit: commodityPrices.silver,
+              total_value: asset.quantity * commodityPrices.silver
+            };
+          } else if (asset.type === 'gold' && asset.auto_update) {
+            return {
+              ...asset,
+              price_per_unit: commodityPrices.gold,
+              total_value: asset.quantity * commodityPrices.gold
+            };
+          }
+          return asset;
+        });
+        setAssets(updatedAssets as Asset[]);
+      } else {
+        // Use mock data with real commodity prices
+        const updatedMockAssets = mockAssets.map(asset => {
+          if (asset.type === 'silver') {
+            return {
+              ...asset,
+              price_per_unit: commodityPrices.silver,
+              total_value: asset.quantity * commodityPrices.silver
+            };
+          } else if (asset.type === 'gold') {
+            return {
+              ...asset,
+              price_per_unit: commodityPrices.gold,
+              total_value: asset.quantity * commodityPrices.gold
+            };
+          }
+          return asset;
+        });
+        setAssets(updatedMockAssets);
       }
     };
-    loadAssets();
-  }, []);
+    
+    if (!pricesLoading) {
+      loadAssets();
+    }
+  }, [commodityPrices, pricesLoading]);
 
   const totalAssetValue = assets.reduce((sum, asset) => sum + asset.total_value, 0);
   const silverValue = assets.filter(a => a.type === "silver").reduce((sum, a) => sum + a.total_value, 0);

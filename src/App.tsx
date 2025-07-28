@@ -6,8 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { DateProvider } from "@/contexts/DateContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import "./i18n";
 import Dashboard from "./pages/Dashboard";
 import Income from "./pages/Income";
 import Expenses from "./pages/Expenses";
@@ -22,10 +24,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CurrencyProvider>
-        <DateProvider>
-          <TooltipProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <CurrencyProvider>
+          <DateProvider>
+            <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -53,6 +56,7 @@ const App = () => (
         </DateProvider>
       </CurrencyProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

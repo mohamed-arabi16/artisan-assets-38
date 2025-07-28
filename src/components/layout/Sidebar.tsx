@@ -114,7 +114,7 @@ export function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps)
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {sidebarItems.map((item) => {
           const isActive = location.pathname === item.href;
           const Icon = item.icon;
@@ -124,15 +124,21 @@ export function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps)
               <Button
                 variant={isActive ? "default" : "ghost"}
                 className={cn(
-                  "w-full justify-start gap-3 h-11 transition-all duration-200",
-                  collapsed && "justify-center px-0",
-                  isActive && "bg-gradient-primary shadow-financial"
+                  "w-full justify-start gap-3 h-12 transition-all duration-200 text-left",
+                  collapsed && "justify-center px-0 gap-0",
+                  isActive && "bg-gradient-primary shadow-financial text-primary-foreground font-medium",
+                  !isActive && "hover:bg-muted/50"
                 )}
               >
-                <Icon className="h-5 w-5 flex-shrink-0" />
+                <Icon className={cn(
+                  "h-5 w-5 flex-shrink-0",
+                  isActive ? "text-primary-foreground" : "text-muted-foreground"
+                )} />
                 <span className={cn(
-                  "transition-opacity duration-200",
-                  collapsed && "opacity-0 sr-only"
+                  "transition-all duration-200 font-medium",
+                  collapsed && "opacity-0 w-0 overflow-hidden",
+                  !collapsed && "opacity-100",
+                  isActive ? "text-primary-foreground" : "text-foreground"
                 )}>
                   {item.title}
                 </span>
@@ -144,8 +150,8 @@ export function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps)
 
       {/* Footer */}
       <div className={cn(
-        "p-4 border-t border-border transition-opacity duration-200",
-        collapsed && "opacity-0"
+        "p-4 border-t border-border transition-all duration-200",
+        collapsed ? "opacity-0 h-0 p-0 overflow-hidden" : "opacity-100"
       )}>
         <div className="text-xs text-muted-foreground text-center">
           Built for freelancers & entrepreneurs

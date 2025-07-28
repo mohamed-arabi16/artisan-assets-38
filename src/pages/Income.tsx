@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCurrency, Currency } from "@/contexts/CurrencyContext";
+import { FinancialCard } from "@/components/ui/financial-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -179,32 +180,33 @@ export default function Income() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-success rounded-lg p-6 text-white shadow-financial">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Total Received</h3>
-            <TrendingUp className="h-5 w-5 opacity-80" />
-          </div>
-          <div className="text-2xl font-bold">{formatCurrency(totalReceived)}</div>
-          <p className="text-sm opacity-75">This month</p>
-        </div>
+        <FinancialCard
+          variant="income"
+          title="Total Received"
+          value={formatCurrency(totalReceived)}
+          subtitle="This month"
+          icon={<TrendingUp className="h-5 w-5" />}
+          trend={{
+            value: "+8.2%",
+            isPositive: true
+          }}
+        />
         
-        <div className="bg-orange-500 rounded-lg p-6 text-white shadow-financial">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Expected</h3>
-            <TrendingUp className="h-5 w-5 opacity-80" />
-          </div>
-          <div className="text-2xl font-bold">{formatCurrency(totalExpected)}</div>
-          <p className="text-sm opacity-75">Next 30-60 days</p>
-        </div>
+        <FinancialCard
+          variant="default"
+          title="Expected"
+          value={formatCurrency(totalExpected)}
+          subtitle="Next 30-60 days"
+          icon={<TrendingUp className="h-5 w-5" />}
+        />
         
-        <div className="bg-gradient-primary rounded-lg p-6 text-primary-foreground shadow-financial">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Total Income</h3>
-            <TrendingUp className="h-5 w-5 opacity-80" />
-          </div>
-          <div className="text-2xl font-bold">{formatCurrency(totalReceived + totalExpected)}</div>
-          <p className="text-sm opacity-75">Combined total</p>
-        </div>
+        <FinancialCard
+          variant="default"
+          title="Total Income"
+          value={formatCurrency(totalReceived + totalExpected)}
+          subtitle="Combined total"
+          icon={<TrendingUp className="h-5 w-5" />}
+        />
       </div>
 
       {/* Income by Category */}
@@ -254,38 +256,38 @@ export default function Income() {
         
         <div className="divide-y divide-border">
           {filteredIncomes.map((income) => (
-            <div key={income.id} className="p-6 hover:bg-muted/50 transition-colors">
-              <div className="flex items-center justify-between">
+            <div key={income.id} className="p-4 sm:p-6 hover:bg-muted/50 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-10 h-10 bg-income/10 rounded-lg">
+                  <div className="flex items-center justify-center w-10 h-10 bg-income/10 rounded-lg flex-shrink-0">
                     {getCategoryIcon(income.category)}
                   </div>
-                  <div>
-                    <h3 className="font-semibold">{income.title}</h3>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-sm sm:text-base">{income.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {new Date(income.date).toLocaleDateString()} • {income.category}
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="font-semibold">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="text-left sm:text-right">
+                    <div className="font-semibold text-sm sm:text-base">
                       {formatCurrency(income.amount, income.currency as Currency)}
                     </div>
                     <Badge 
-                      className={`${getStatusColor(income.status)} text-white`}
+                      className={`${getStatusColor(income.status)} text-white text-xs`}
                     >
                       {income.status}
                     </Badge>
                   </div>
                   
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="sm">
-                      <Edit className="h-4 w-4" />
+                  <div className="flex gap-1 sm:gap-2">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                 </div>

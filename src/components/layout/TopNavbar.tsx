@@ -26,6 +26,7 @@ import {
 import { useState } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDate } from "@/contexts/DateContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -36,14 +37,13 @@ interface TopNavbarProps {
 export function TopNavbar({ onMobileMenuClick }: TopNavbarProps) {
   const { currency, setCurrency } = useCurrency();
   const { selectedMonth, setSelectedMonth, getMonthOptions } = useDate();
+  const { theme, setTheme, actualTheme } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [theme, setTheme] = useState("light");
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
+    const newTheme = actualTheme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
   const handleLogout = () => {
@@ -108,7 +108,7 @@ export function TopNavbar({ onMobileMenuClick }: TopNavbarProps) {
           onClick={toggleTheme}
           className="h-8 w-8 p-0"
         >
-          {theme === "light" ? (
+          {actualTheme === "light" ? (
             <Moon className="h-4 w-4" />
           ) : (
             <Sun className="h-4 w-4" />
