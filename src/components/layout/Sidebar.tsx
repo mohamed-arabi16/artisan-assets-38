@@ -47,15 +47,34 @@ const sidebarItems = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
+}
+
+export function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
   return (
-    <div className={cn(
-      "relative flex flex-col h-screen bg-gradient-card border-r border-border transition-all duration-300 ease-smooth",
-      collapsed ? "w-16" : "w-64"
-    )}>
+    <>
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      
+      <div className={cn(
+        "relative flex flex-col h-screen bg-gradient-card border-r border-border transition-all duration-300 ease-smooth",
+        "lg:relative lg:translate-x-0",
+        // Mobile styles
+        "fixed z-50 lg:z-auto",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        // Width styles
+        collapsed ? "w-16" : "w-64"
+      )}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className={cn(
@@ -74,13 +93,23 @@ export function Sidebar() {
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 p-0 shrink-0"
+          className="h-8 w-8 p-0 shrink-0 hidden lg:flex"
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
           ) : (
             <ChevronLeft className="h-4 w-4" />
           )}
+        </Button>
+        
+        {/* Mobile close button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="h-8 w-8 p-0 shrink-0 lg:hidden"
+        >
+          <ChevronLeft className="h-4 w-4" />
         </Button>
       </div>
 
@@ -91,7 +120,7 @@ export function Sidebar() {
           const Icon = item.icon;
           
           return (
-            <Link key={item.href} to={item.href}>
+            <Link key={item.href} to={item.href} onClick={() => setIsMobileMenuOpen(false)}>
               <Button
                 variant={isActive ? "default" : "ghost"}
                 className={cn(
@@ -123,5 +152,6 @@ export function Sidebar() {
         </div>
       </div>
     </div>
+    </>
   );
 }

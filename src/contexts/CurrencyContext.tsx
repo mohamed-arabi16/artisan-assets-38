@@ -5,7 +5,7 @@ export type Currency = 'USD' | 'TRY';
 interface CurrencyContextType {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
-  formatCurrency: (amount: number) => string;
+  formatCurrency: (amount: number, fromCurrency?: Currency) => string;
   convertCurrency: (amount: number, fromCurrency: Currency) => number;
   exchangeRate: number;
 }
@@ -63,7 +63,7 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
     return amount;
   };
 
-  const formatCurrency = (amount: number, fromCurrency: Currency = 'USD'): string => {
+  const formatCurrency = (amount: number, fromCurrency: Currency = currency): string => {
     const convertedAmount = convertCurrency(amount, fromCurrency);
     
     if (currency === 'USD') {

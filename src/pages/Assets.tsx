@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { FinancialCard } from "@/components/ui/financial-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +51,7 @@ interface Asset {
 // Mock data
 const mockAssets: Asset[] = [
   {
-    id: 1,
+    id: "1",
     type: "silver",
     quantity: 150,
     unit: "grams",
@@ -60,7 +61,7 @@ const mockAssets: Asset[] = [
     auto_update: true
   },
   {
-    id: 2,
+    id: "2",
     type: "bitcoin",
     quantity: 0.05,
     unit: "BTC",
@@ -70,7 +71,7 @@ const mockAssets: Asset[] = [
     auto_update: true
   },
   {
-    id: 3,
+    id: "3",
     type: "real_estate",
     quantity: 1,
     unit: "property",
@@ -84,6 +85,7 @@ const mockAssets: Asset[] = [
 export default function Assets() {
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [isAddingAsset, setIsAddingAsset] = useState(false);
+  const { formatCurrency } = useCurrency();
 
   useEffect(() => {
     const loadAssets = async () => {
@@ -203,7 +205,7 @@ export default function Assets() {
         <FinancialCard
           variant="asset"
           title="Total Assets"
-          value={`$${totalAssetValue.toLocaleString()}`}
+          value={formatCurrency(totalAssetValue)}
           subtitle="All tracked assets"
           icon={<Gem className="h-5 w-5" />}
           trend={{
@@ -215,7 +217,7 @@ export default function Assets() {
         <FinancialCard
           variant="default"
           title="Silver Value"
-          value={`$${silverValue.toLocaleString()}`}
+          value={formatCurrency(silverValue)}
           subtitle="Precious metals"
           icon={<Gem className="h-5 w-5" />}
         />
@@ -223,7 +225,7 @@ export default function Assets() {
         <FinancialCard
           variant="default"
           title="Crypto Value" 
-          value={`$${cryptoValue.toLocaleString()}`}
+          value={formatCurrency(cryptoValue)}
           subtitle="Digital assets"
           icon={<Bitcoin className="h-5 w-5" />}
         />
@@ -231,7 +233,7 @@ export default function Assets() {
         <FinancialCard
           variant="default"
           title="Real Estate"
-          value={`$${realEstateValue.toLocaleString()}`}
+          value={formatCurrency(realEstateValue)}
           subtitle="Property value"
           icon={<Home className="h-5 w-5" />}
         />
@@ -257,14 +259,14 @@ export default function Assets() {
                       <div>
                         <CardTitle className="text-lg">{formatAssetType(asset.type)}</CardTitle>
                         <CardDescription>
-                          {asset.quantity} {asset.unit} @ ${asset.price_per_unit.toLocaleString()}/{asset.unit}
+                          {asset.quantity} {asset.unit} @ {formatCurrency(asset.price_per_unit)}/{asset.unit}
                         </CardDescription>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <div className="text-2xl font-bold">${asset.total_value.toLocaleString()}</div>
+                        <div className="text-2xl font-bold">{formatCurrency(asset.total_value)}</div>
                         {asset.auto_update && (
                           <div className="flex items-center gap-1 text-xs text-green-600">
                             <TrendingUp className="h-3 w-3" />

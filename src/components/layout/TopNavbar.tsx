@@ -20,22 +20,25 @@ import {
   Sun,
   DollarSign,
   User,
-  LogOut
+  LogOut,
+  Menu
 } from "lucide-react";
 import { useState } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useDate } from "@/contexts/DateContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-export function TopNavbar() {
+interface TopNavbarProps {
+  onMobileMenuClick?: () => void;
+}
+
+export function TopNavbar({ onMobileMenuClick }: TopNavbarProps) {
   const { currency, setCurrency } = useCurrency();
+  const { selectedMonth, setSelectedMonth, getMonthOptions } = useDate();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [theme, setTheme] = useState("light");
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  });
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -48,32 +51,26 @@ export function TopNavbar() {
     navigate("/signin");
   };
 
-  const generateMonthOptions = () => {
-    const options = [];
-    const currentDate = new Date();
-    
-    // Generate last 12 months
-    for (let i = 0; i < 12; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const label = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-      options.push({ value, label });
-    }
-    
-    return options;
-  };
 
   return (
     <div className="flex items-center justify-between p-4 bg-gradient-card border-b border-border">
-      {/* Month Selector */}
+      {/* Mobile menu button + Month Selector */}
       <div className="flex items-center gap-2">
-        <Calendar className="h-5 w-5 text-muted-foreground" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onMobileMenuClick}
+          className="h-8 w-8 p-0 lg:hidden"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
+        <Calendar className="h-5 w-5 text-muted-foreground hidden sm:flex" />
         <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-32 sm:w-40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {generateMonthOptions().map(({ value, label }) => (
+            {getMonthOptions().map(({ value, label }) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
           </SelectContent>
@@ -81,25 +78,26 @@ export function TopNavbar() {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         {/* Currency Toggle */}
         <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
           <Button
             variant={currency === "USD" ? "default" : "ghost"}
             size="sm"
             onClick={() => setCurrency("USD")}
-            className="h-8 px-3"
+            className="h-8 px-2 sm:px-3"
           >
-            <DollarSign className="h-4 w-4 mr-1" />
-            USD
+            <DollarSign className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">USD</span>
           </Button>
           <Button
             variant={currency === "TRY" ? "default" : "ghost"}
             size="sm"
             onClick={() => setCurrency("TRY")}
-            className="h-8 px-3"
+            className="h-8 px-2 sm:px-3"
           >
-            ₺ TRY
+            <span className="sm:mr-1">₺</span>
+            <span className="hidden sm:inline">TRY</span>
           </Button>
         </div>
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useCurrency, Currency } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +56,7 @@ export default function Income() {
   const [incomes, setIncomes] = useState(mockIncomes);
   const [isAddingIncome, setIsAddingIncome] = useState(false);
   const [filter, setFilter] = useState("all");
+  const { formatCurrency } = useCurrency();
 
   const getStatusColor = (status: string) => {
     return status === "received" ? "bg-income" : "bg-orange-500";
@@ -71,17 +73,16 @@ export default function Income() {
 
   const totalExpected = incomes
     .filter(i => i.status === "expected")
-    .reduce((sum, i) => sum + (i.currency === "USD" ? i.amount : i.amount / 32), 0);
+    .reduce((sum, i) => sum + i.amount, 0);
 
   const totalReceived = incomes
     .filter(i => i.status === "received") 
-    .reduce((sum, i) => sum + (i.currency === "USD" ? i.amount : i.amount / 32), 0);
+    .reduce((sum, i) => sum + i.amount, 0);
 
   // Calculate income by category
   const incomeByCategory = incomes.reduce((acc, income) => {
     const category = income.category;
-    const amountInUSD = income.currency === "USD" ? income.amount : income.amount / 32;
-    acc[category] = (acc[category] || 0) + amountInUSD;
+    acc[category] = (acc[category] || 0) + income.amount;
     return acc;
   }, {} as Record<string, number>);
 
@@ -183,7 +184,7 @@ export default function Income() {
             <h3 className="text-sm font-medium opacity-90">Total Received</h3>
             <TrendingUp className="h-5 w-5 opacity-80" />
           </div>
-          <div className="text-2xl font-bold">${totalReceived.toLocaleString()}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalReceived)}</div>
           <p className="text-sm opacity-75">This month</p>
         </div>
         
@@ -192,7 +193,7 @@ export default function Income() {
             <h3 className="text-sm font-medium opacity-90">Expected</h3>
             <TrendingUp className="h-5 w-5 opacity-80" />
           </div>
-          <div className="text-2xl font-bold">${totalExpected.toLocaleString()}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalExpected)}</div>
           <p className="text-sm opacity-75">Next 30-60 days</p>
         </div>
         
@@ -201,7 +202,7 @@ export default function Income() {
             <h3 className="text-sm font-medium opacity-90">Total Income</h3>
             <TrendingUp className="h-5 w-5 opacity-80" />
           </div>
-          <div className="text-2xl font-bold">${(totalReceived + totalExpected).toLocaleString()}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalReceived + totalExpected)}</div>
           <p className="text-sm opacity-75">Combined total</p>
         </div>
       </div>
@@ -220,7 +221,7 @@ export default function Income() {
                   <TrendingUp className="h-4 w-4 text-income" />
                   <span className="text-sm font-medium capitalize">{category}</span>
                 </div>
-                <div className="text-2xl font-bold">${amount.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{formatCurrency(amount)}</div>
                 <div className="text-sm text-muted-foreground">
                   {((amount / (totalReceived + totalExpected)) * 100).toFixed(1)}% of total
                 </div>
@@ -270,7 +271,7 @@ export default function Income() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="font-semibold">
-                      {income.currency === "USD" ? "$" : "₺"}{income.amount.toLocaleString()}
+                      {formatCurrency(income.amount, income.currency as Currency)}
                     </div>
                     <Badge 
                       className={`${getStatusColor(income.status)} text-white`}

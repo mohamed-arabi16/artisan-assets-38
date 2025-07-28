@@ -10,8 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Settings as SettingsIcon, Moon, Sun, DollarSign, Globe } from "lucide-react";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function Settings() {
+  const { currency, setCurrency } = useCurrency();
+
   return (
     <div className="p-6 space-y-6 bg-gradient-dashboard min-h-screen">
       {/* Page Header */}
@@ -37,7 +40,7 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="default-currency">Default Currency</Label>
-              <Select defaultValue="USD">
+              <Select value={currency} onValueChange={setCurrency}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
